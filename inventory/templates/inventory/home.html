@@ -8,7 +8,22 @@
 </head>
 <body>
     <h1>Welcome to the Logistics Management System</h1>
-    <p><a href="{% url 'spare_parts_list' %}">Go to Spare Parts List</a></p>
-    <p><a href="{% url 'login' %}">Login</a></p>
+    <p><a href="{% url 'base' %}">Navigate our store</a></p>
+
+    {% if user.is_authenticated %}
+        <div class="user-info">
+            <p>Hello, {{ user.username }}!</p>
+            <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+            <a href="{% url 'profile' %}" class="btn btn-primary">Go to Profile</a>
+        </div>
+    {% else %}
+        <div class="auth-links">
+            <p><a href="{% url 'login' %}" class="btn btn-success">Login</a></p>
+            <p><a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a></p>
+        </div>
+    {% endif %}
 </body>
 </html>

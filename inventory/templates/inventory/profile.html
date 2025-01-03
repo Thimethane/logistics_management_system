@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Update Profile</h1>
+
+    <!-- Form for Updating Profile -->
+    <form method="POST">
+        {% csrf_token %}
+        <h3>Update Personal Information</h3>
+        {{ profile_form.as_p }}
+        <button type="submit" name="update_profile">Update Profile</button>
+    </form>
+
+    <hr>
+
+    <!-- Form for Changing Password -->
+    <form method="POST">
+        {% csrf_token %}
+        <h3>Change Password</h3>
+        {{ password_form.as_p }}
+        <button type="submit" name="change_password">Change Password</button>
+    </form>
+
+    <p><a href="{% url 'home' %}">Back to Home</a></p>
+</body>
+</html>
