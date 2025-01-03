@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Spare Parts{% endblock %}
+
+{% block content %}
+<h1>Spare Parts</h1>
+<form method="get" action="{% url 'spare_parts_list' %}">
+    {{ form.as_p }}
+    <button type="submit">Search</button>
+</form>
+<ul>
+    {% for spare_part in spare_parts %}
+        <li>{{ spare_part.name }} - {{ spare_part.description }}</li>
+    {% empty %}
+        <li>No spare parts found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

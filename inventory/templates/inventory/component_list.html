@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Component List{% endblock %}
+
+{% block content %}
+<h1>Component List</h1>
+
+<ul>
+    {% for component in components %}
+        <li>
+            <strong>{{ component.name }}</strong>: {{ component.description }}
+        </li>
+    {% empty %}
+        <li>No components available.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'add_component' %}" class="button">Add New Component</a>
+{% endblock %}

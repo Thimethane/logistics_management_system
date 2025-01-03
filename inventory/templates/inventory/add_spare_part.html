@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Spare Part{% endblock %}
+
+{% block content %}
+<h1>Add Spare Part</h1>
+<form method="post" action="{% url 'add_spare_part' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add Spare Part</button>
+</form>
+{% endblock %}

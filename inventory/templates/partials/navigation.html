@@ -1,0 +1,14 @@
+<nav>
+    <div class="nav-container">
+        <img src="{% static 'img/logo.png' %}" alt="Logo" class="logo">
+        <ul>
+            <li><a href="{% url 'spare_parts_list' %}">Spare Parts</a></li>
+            <li><a href="{% url 'component_list' %}">Components</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
