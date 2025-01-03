@@ -34,6 +34,7 @@ The system supports features such as user authentication, role-based access cont
 1. Python 3.8+
 2. Django 4.x
 3. Virtualenv (optional but recommended)
+4. reportlab
 
 ### Steps
 

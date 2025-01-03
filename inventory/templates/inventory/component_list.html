@@ -1,19 +1,59 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}Component List{% endblock %}
-
 {% block content %}
-<h1>Component List</h1>
+  <h1>Component List</h1>
 
-<ul>
-    {% for component in components %}
-        <li>
-            <strong>{{ component.name }}</strong>: {{ component.description }}
-        </li>
-    {% empty %}
-        <li>No components available.</li>
+  <!-- Search Form -->
+  <form method="get">
+    <input type="text" name="search_query" value="{{ search_query }}" placeholder="Search by name or description">
+    <button type="submit">Search</button>
+  </form>
+
+  <!-- Export Options -->
+  <a href="?export_csv=true&search_query={{ search_query }}">Export to CSV</a> |
+  <a href="?export_pdf=true&search_query={{ search_query }}">Export to PDF</a>
+
+  <!-- Display Search Results -->
+  <p>
+    {% if search_query %}
+      Showing results for "{{ search_query }}":
+    {% else %}
+      Showing all components:
+    {% endif %}
+  </p>
+
+  <!-- Component List Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for component in components %}
+        <tr>
+          <td>{{ component.name }}</td>
+          <td>{{ component.description }}</td>
+          <td>
+            <a href="{% url 'edit_component' component.id %}">Edit</a> | 
+            <a href="{% url 'delete_component' component.id %}">Delete</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">No components found matching your criteria.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div>
+    {% for page_num in page_obj.paginator.page_range %}
+      <a href="?page={{ page_num }}&search_query={{ search_query }}">{{ page_num }}</a>
     {% endfor %}
-</ul>
-
+  </div>
 <a href="{% url 'add_component' %}" class="button">Add New Component</a>
 {% endblock %}

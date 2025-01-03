@@ -1,0 +1,20 @@
+<!-- templates/inventory/edit_component.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Component</title>
+</head>
+<body>
+    <h1>Edit Component</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Render the form fields -->
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <a href="{% url 'component_list' %}">Cancel</a> <!-- Link to go back to component list -->
+</body>
+</html>

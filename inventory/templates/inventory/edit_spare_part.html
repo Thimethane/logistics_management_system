@@ -1,0 +1,17 @@
+<!-- inventory/templates/inventory/edit_spare_part.html -->
+
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+  <h2>Edit Spare Part</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <br>
+  <a href="{% url 'spare_parts_list' %}">Back to Spare Parts List</a>
+{% endblock %}

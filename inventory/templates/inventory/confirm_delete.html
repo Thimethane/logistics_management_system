@@ -1,0 +1,17 @@
+<!-- templates/inventory/confirm_delete.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Delete</title>
+</head>
+<body>
+    <h1>Are you sure you want to delete the component "{{ component.name }}"?</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Yes, delete</button>
+        <a href="{% url 'component_list' %}">Cancel</a>
+    </form>
+</body>
+</html>

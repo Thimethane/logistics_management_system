@@ -1,18 +1,76 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}Spare Parts{% endblock %}
-
 {% block content %}
-<h1>Spare Parts</h1>
-<form method="get" action="{% url 'spare_parts_list' %}">
-    {{ form.as_p }}
+  <h1>Spare Parts List</h1>
+
+  <!-- Search Form -->
+  <form method="get">
+    <input type="text" name="query" value="{{ search_query }}" placeholder="Search by name, serial number, or location">
     <button type="submit">Search</button>
-</form>
-<ul>
-    {% for spare_part in spare_parts %}
-        <li>{{ spare_part.name }} - {{ spare_part.description }}</li>
-    {% empty %}
-        <li>No spare parts found.</li>
+  </form>
+
+  <!-- Sort Links -->
+  <div>
+    <a href="?sort=name&order=asc&query={{ search_query }}">Sort by Name (Asc)</a> | 
+    <a href="?sort=name&order=desc&query={{ search_query }}">Sort by Name (Desc)</a> | 
+    <a href="?sort=date_received&order=asc&query={{ search_query }}">Sort by Date Received (Asc)</a> | 
+    <a href="?sort=date_received&order=desc&query={{ search_query }}">Sort by Date Received (Desc)</a>
+  </div>
+
+  <!-- Display Results -->
+  <p>
+    {% if search_query %}
+      Showing results for "{{ search_query }}":
+    {% else %}
+      Showing all spare parts:
+    {% endif %}
+  </p>
+
+  <!-- Table of Spare Parts -->
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Serial Number</th>
+        <th>Condition</th>
+        <th>Location</th>
+        <th>Received</th>
+        <th>Last update</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for spare_part in spare_parts %}
+        <tr>
+          <td>{{ spare_part.name }}</td>
+          <td>{{ spare_part.serial_number }}</td>
+          <td>{{ spare_part.get_condition_display }}</td>
+          <td>{{ spare_part.location }}</td>
+          <td>{{ spare_part.created_at }}</td>
+          <td>{{ spare_part.updated_at }}</td>
+          <td>
+            <a href="{% url 'edit_spare_part' spare_part.id %}">Edit</a> | 
+            <a href="{% url 'delete_spare_part' spare_part.id %}">Delete</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="7">No spare parts found matching your criteria.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div>
+    {% for page_num in page_obj.paginator.page_range %}
+      <a href="?page={{ page_num }}&query={{ search_query }}&sort={{ sort_by }}&order={{ order }}">{{ page_num }}</a>
     {% endfor %}
-</ul>
+  </div>
+
+  <!-- Export Options -->
+  <a href="?export_csv=true&query={{ search_query }}">Export to CSV</a> |
+  <a href="?export_pdf=true&query={{ search_query }}">Export to PDF</a>
+
+  <a href="{% url 'add_spare_part' %}" class="button">Add Spare Part</a>
 {% endblock %}
