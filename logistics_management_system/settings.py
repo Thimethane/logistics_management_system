@@ -73,9 +73,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'logistics_management_system.wsgi.application'
 
 LOGOUT_REDIRECT_URL = '/'
-
-LOGIN_URL = '/login/'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = '/'  # Redirect to the homepage
 
 
 # Database

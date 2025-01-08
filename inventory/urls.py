@@ -6,7 +6,7 @@ urlpatterns = [
     # Home Page
     path('', views.home, name='home'),
 
-    # Base Template (example route to view common layout if required)
+    # Base Template (example route to view common layout)
     path('base/', views.base, name='base'),
 
     # Authentication URLs
