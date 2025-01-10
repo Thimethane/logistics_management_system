@@ -5,13 +5,17 @@
 
   <!-- Search Form -->
   <form method="get">
-    <input type="text" name="search_query" value="{{ search_query }}" placeholder="Search by name or description">
+    <input type="text" name="query" value="{{ search_query }}" placeholder="Search by name or description">
     <button type="submit">Search</button>
   </form>
 
   <!-- Export Options -->
-  <a href="?export_csv=true&search_query={{ search_query }}">Export to CSV</a> |
-  <a href="?export_pdf=true&search_query={{ search_query }}">Export to PDF</a>
+
+  <a href="{% url 'export_csv_view' %}?data_type=components&search_query={{ search_query }}&page={{ page_obj.number }}&export_csv=true">Export Components to CSV</a> |
+  <form method="GET" action="{% url 'export_pdf_view' %}">
+    <input type="hidden" name="export_type" value="Components">
+    <button type="submit">Export Components to PDF</button>
+</form>
 
   <!-- Display Search Results -->
   <p>
@@ -26,7 +30,16 @@
   <table>
     <thead>
       <tr>
-        <th>Name</th>
+        <th>
+          <a href="?query={{ search_query }}&sort=name&order={% if sort_by == 'name' and order == 'asc' %}desc{% else %}asc{% endif %}">
+            Name {% if sort_by == 'name' %}({{ order|capfirst }}){% endif %}
+          </a>
+        </th>
+        <th>
+          <a href="?query={{ search_query }}&sort=created_at&order={% if sort_by == 'created_at' and order == 'asc' %}desc{% else %}asc{% endif %}">
+            Created At {% if sort_by == 'created_at' %}({{ order|capfirst }}){% endif %}
+          </a>
+        </th>
         <th>Description</th>
         <th>Actions</th>
       </tr>
@@ -35,6 +48,7 @@
       {% for component in components %}
         <tr>
           <td>{{ component.name }}</td>
+          <td>{{ component.created_at|date:"Y-m-d H:i" }}</td>
           <td>{{ component.description }}</td>
           <td>
             <a href="{% url 'edit_component' component.id %}">Edit</a> | 
@@ -43,7 +57,7 @@
         </tr>
       {% empty %}
         <tr>
-          <td colspan="3">No components found matching your criteria.</td>
+          <td colspan="4">No components found matching your criteria.</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -51,9 +65,18 @@
 
   <!-- Pagination -->
   <div>
+    {% if page_obj.has_previous %}
+      <a href="?query={{ search_query }}&sort={{ sort_by }}&order={{ order }}&page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
     {% for page_num in page_obj.paginator.page_range %}
-      <a href="?page={{ page_num }}&search_query={{ search_query }}">{{ page_num }}</a>
+      <a href="?query={{ search_query }}&sort={{ sort_by }}&order={{ order }}&page={{ page_num }}"
+         {% if page_obj.number == page_num %}class="active"{% endif %}>{{ page_num }}</a>
     {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="?query={{ search_query }}&sort={{ sort_by }}&order={{ order }}&page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
   </div>
-<a href="{% url 'add_component' %}" class="button">Add New Component</a>
+
+  <!-- Add New Component -->
+  <a href="{% url 'add_component' %}" class="button">Add New Component</a>
 {% endblock %}

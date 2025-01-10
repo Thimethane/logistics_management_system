@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db import transaction
 
 class SparePart(models.Model):
     CONDITION_CHOICES = [
@@ -38,6 +39,23 @@ class SparePart(models.Model):
             ("can_view_sparepart", "Can view spare part"),
             ("edit_sparepart", "Can edit spare part"),
         ]
+        
+    @transaction.atomic
+    def move_to_condition(self, new_condition):
+        """Move a spare part to a new condition category."""
+        if new_condition not in dict(self.CONDITION_CHOICES):
+            raise ValueError(f"Invalid condition: {new_condition}")
+        old_condition = self.condition
+        self.condition = new_condition
+        self.save()
+        # Log the action
+        ActionLog.objects.create(
+            user=None,  # Replace with current user in view
+            action_type='edit',
+            model_affected='SparePart',
+            item_id=self.id,
+        )
+        return f"Moved {self.name} from {old_condition} to {new_condition}"
 
 
 class Component(models.Model):
@@ -87,6 +105,22 @@ class Component(models.Model):
             ("can_view_component", "Can view component"),
             ("edit_component", "Can edit component"),
         ]
+        
+    @transaction.atomic
+    def move_to_status(self, new_status):
+        """Move a component to a new status category."""
+        if new_status not in dict(self.STATUS_CHOICES):
+            raise ValueError(f"Invalid status: {new_status}")
+        old_status = self.status
+        self.status = new_status
+        self.save()
+        ActionLog.objects.create(
+            user=None,  # Replace with current user in view
+            action_type='edit',
+            model_affected='Component',
+            item_id=self.id,
+        )
+        return f"Moved {self.name} from {old_status} to {new_status}"
 
 
 class ActionLog(models.Model):
@@ -105,55 +139,13 @@ class ActionLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} performed {self.get_action_type_display()} on {self.model_affected} ({self.item_id})"
-
-
-class ExportUtility:
+    
     @staticmethod
-    def export_to_csv(queryset, file_name="exported_data.csv"):
-        import csv
-        from io import StringIO
-
-        output = StringIO()
-        writer = csv.writer(output)
-        
-        if queryset.model == SparePart:
-            writer.writerow(['Name', 'Serial Number', 'Condition', 'Location', 'Created At', 'Updated At'])
-            for part in queryset:
-                writer.writerow([part.name, part.serial_number, part.condition, part.location, part.created_at, part.updated_at])
-        elif queryset.model == Component:
-            writer.writerow(['Name', 'Description', 'Quantity', 'Status', 'Classification', 'Created At', 'Updated At'])
-            for component in queryset:
-                writer.writerow([component.name, component.description, component.quantity, component.status, component.classification, component.created_at, component.updated_at])
-        
-        output.seek(0)
-        return output.getvalue()
+    def get_logs_by_user(user):
+        """Retrieve logs for a specific user."""
+        return ActionLog.objects.filter(user=user).order_by('-timestamp')
 
     @staticmethod
-    def export_to_pdf(queryset, file_name="exported_data.pdf"):
-        from reportlab.lib.pagesizes import letter
-        from reportlab.lib import colors
-        from reportlab.pdfgen import canvas
-
-        buffer = BytesIO()
-        p = canvas.Canvas(buffer, pagesize=letter)
-
-        if queryset.model == SparePart:
-            p.drawString(100, 800, 'Spare Parts List')
-            p.setFont("Helvetica", 10)
-            y_position = 780
-            for part in queryset:
-                p.drawString(100, y_position, f"{part.name}, {part.serial_number}, {part.condition}, {part.location}, {part.created_at}, {part.updated_at}")
-                y_position -= 20
-        elif queryset.model == Component:
-            p.drawString(100, 800, 'Component List')
-            p.setFont("Helvetica", 10)
-            y_position = 780
-            for component in queryset:
-                p.drawString(100, y_position, f"{component.name}, {component.description}, {component.quantity}, {component.status}, {component.classification}, {component.created_at}, {component.updated_at}")
-                y_position -= 20
-
-        p.showPage()
-        p.save()
-
-        buffer.seek(0)
-        return buffer.read()
+    def get_logs_for_model(model_name):
+        """Retrieve logs for a specific model."""
+        return ActionLog.objects.filter(model_affected=model_name).order_by('-timestamp')

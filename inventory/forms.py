@@ -3,6 +3,7 @@ from .models import SparePart, Component
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class SparePartForm(forms.ModelForm):
     class Meta:
@@ -43,21 +44,23 @@ class ProfileUpdateForm(forms.ModelForm):
         model = User
         fields = ['username', 'email']
 
-from django import forms
-from django.contrib.auth.models import User
-
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
-        
-
-from django import forms
 
 class SparePartSearchForm(forms.Form):
     query = forms.CharField(max_length=100, required=False, label='Search')
 
 
-from django.conf import settings
+class ComponentSearchForm(forms.Form):
+    query = forms.CharField(
+        required=False,
+        label='Search Components',
+        widget=forms.TextInput(attrs={'placeholder': 'Search by name or description', 'class': 'form-control'})
+    )
 
-User = settings.AUTH_USER_MODEL
+    def clean_query(self):
+        query = self.cleaned_data.get('query', '')
+        return query.strip() if query else ''
+

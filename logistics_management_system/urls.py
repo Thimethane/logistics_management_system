@@ -26,7 +26,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),  # Admin path
     path('', inventory_views.home, name='home'),  # Root URL mapped to home view
     path('inventory/', include('inventory.urls')),  # Including the inventory app URLs
-    path('login/', auth_views.LoginView.as_view(), name='login'),  # Login URL
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Logout URL
     path('register/', inventory_views.register, name='register'),  # Register URL
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

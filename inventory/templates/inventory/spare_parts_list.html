@@ -9,12 +9,13 @@
     <button type="submit">Search</button>
   </form>
 
-  <!-- Sort Links -->
+  <!-- Sort Links in a Separate Div -->
   <div>
-    <a href="?sort=name&order=asc&query={{ search_query }}">Sort by Name (Asc)</a> | 
-    <a href="?sort=name&order=desc&query={{ search_query }}">Sort by Name (Desc)</a> | 
-    <a href="?sort=date_received&order=asc&query={{ search_query }}">Sort by Date Received (Asc)</a> | 
-    <a href="?sort=date_received&order=desc&query={{ search_query }}">Sort by Date Received (Desc)</a>
+    <span>Sort By:</span>
+    <a href="?sort=name&order=asc&query={{ search_query }}">Name (Asc)</a> |
+    <a href="?sort=name&order=desc&query={{ search_query }}">Name (Desc)</a> |
+    <a href="?sort=date_received&order=asc&query={{ search_query }}">Date Received (Asc)</a> |
+    <a href="?sort=date_received&order=desc&query={{ search_query }}">Date Received (Desc)</a>
   </div>
 
   <!-- Display Results -->
@@ -69,8 +70,12 @@
   </div>
 
   <!-- Export Options -->
-  <a href="?export_csv=true&query={{ search_query }}">Export to CSV</a> |
-  <a href="?export_pdf=true&query={{ search_query }}">Export to PDF</a>
+  <!-- For exporting spare parts -->
+  <a href="{% url 'export_csv_view' %}?data_type=spare_parts&search_query={{ search_query }}&page={{ page_obj.number }}&export_csv=true">Export Spare Parts to CSV</a> |
+  <form method="GET" action="{% url 'export_pdf_view' %}">
+    <input type="hidden" name="export_type" value="spareparts">
+    <button type="submit">Export Spare Parts PDF</button>
+</form>
 
   <a href="{% url 'add_spare_part' %}" class="button">Add Spare Part</a>
 {% endblock %}
